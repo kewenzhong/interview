@@ -1045,6 +1045,22 @@ weak_ptr 允许你共享但不拥有某对象，一旦最末一个拥有该对�
 unique_ptr 是 C++11 才开始提供的类型，是一种在异常时可以帮助避免资源泄漏的智能指针。采用独占式拥有，意味着可以确保一个对象和其相应的资源同一时间只被一个 pointer 拥有。一旦拥有着被销毁或编程 empty，或开始拥有另一个对象，先前拥有的那个对象就会被销毁，其任何相应资源亦会被释放。
 
 * unique_ptr 用于取代 auto_ptr
+* unique_ptr 是一个装指针的容器，且拥有关联指针的唯一所有权，作为普通变量使用时系统分配对象到栈内存上，超出作用域时会自动析构，unique_ptr对象的析构函数中会delete其关联指针，这样就相当于替我们执行了delete堆内存上的对象<br>
+
+	|成员函数|作用|
+	|:-----:|---|
+	| reset() | 重置unique_ptr为空，delete其关联的指针 |
+	| release() | 不delete关联指针，并返回关联指针。释放关联指针的所有权，unique_ptr为空 |
+	| get() | 仅仅返回关联指针 |
+
+* unique_ptr不能直接复制，必须使用***std::move()***转移其管理的指针，转移后原 unique_ptr 为空。***std::unique_ptr<Task> taskPtr4 = std::move(taskPtr2);***
+* 创建unique_ptr对象有两种方法：
+```cpp
+  //C++11: 
+  std::unique_ptr<Task> taskPtr(new Task(23));
+  //C++14: 
+  std::unique_ptr<Task> taskPtr = std::make_unique<Task>(34);
+```
 
 ##### auto_ptr
 
