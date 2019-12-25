@@ -1033,6 +1033,38 @@ std::auto_ptr<std::string> ps (new std::string(str))；
 多个智能指针可以共享同一个对象，对象的最末一个拥有着有责任销毁对象，并清理与该对象相关的所有资源。
 
 * 支持定制型删除器（custom deleter），可防范 Cross-DLL 问题（对象在动态链接库（DLL）中被 new 创建，却在另一个 DLL 内被 delete 销毁）、自动解除互斥锁
+* shared_ptr 的初始化方法有三种：通过构造函数传递原始指针、make_shared方式和拷贝初始化
+```
+#include <iostream>
+#include <memory>
+using namespace std;
+
+int main()
+{　　
+　　/*---------空指针------------*/
+　　 shared_ptr<string> p1;
+    if(!p1)                     　　　　//!默认初始化的智能指针中保存着一个空指针！并不是""空字符串
+        cout<<"p1==NULL"<<endl;
+
+　　/*---------初始化------------*/
+
+　　shared_ptr<string> p2(new string); 
+　　if(p2&&p2->empty()){ 　　　　　　　　//！需要注意的时empty时属于string的成员函数。 
+　　　　*p2="helloworld"; 
+　　　　cout<<*p2<<endl;
+　　}
+
+//    shared_ptr<int> pa = new int(1);//！error:不允许以暴露裸漏的指针进行赋值操作。
+
+　　//一般的初始化方式
+    shared_ptr<string> pString(new string("normal usage!"));
+    cout<<*pString<<endl;
+
+    //推荐的安全的初始化方式
+    shared_ptr<string> pString1 = make_shared<string>("safe uage!");
+    cout<<*pString1<<endl;
+}
+```
 
 ##### weak_ptr
 
